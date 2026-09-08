@@ -74,43 +74,59 @@ export function Recorder({ onSaved }: Props) {
   const active = state !== "idle";
 
   return (
-    <section className="rounded-3xl bg-card p-6 shadow-sm ring-1 ring-border">
-      <div className="flex flex-col items-center gap-5">
-        <p className="font-mono text-4xl tabular-nums text-foreground">{formatDuration(seconds)}</p>
-        <p className="text-sm text-muted-foreground">
-          {state === "recording" ? "Recording…" : state === "paused" ? "Paused" : "Tap to record a thought"}
-        </p>
-        <div className="flex items-center gap-4">
-          {!active && (
-            <button
-              onClick={start}
-              aria-label="Start recording"
-              className="flex h-20 w-20 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95"
-            >
-              <Mic className="h-8 w-8" />
-            </button>
-          )}
-          {active && (
-            <>
-              <button
-                onClick={state === "recording" ? pause : resume}
-                aria-label={state === "recording" ? "Pause recording" : "Resume recording"}
-                className="flex h-16 w-16 items-center justify-center rounded-full bg-accent text-accent-foreground transition-transform active:scale-95"
-              >
-                {state === "recording" ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
-              </button>
-              <button
-                onClick={stop}
-                aria-label="Stop and save recording"
-                className="flex h-20 w-20 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95"
-              >
-                <Square className="h-7 w-7" />
-              </button>
-            </>
-          )}
+    <div className="absolute bottom-4 right-4 z-20 flex flex-col items-end gap-3">
+      {active && (
+        <div className="mb-1 flex items-center gap-3 rounded-2xl bg-card px-4 py-3 shadow-xl ring-1 ring-border">
+          <span className="relative flex h-3 w-3">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75" />
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-destructive" />
+          </span>
+          <div className="flex flex-col">
+            <span className="text-xs font-medium text-foreground">Recording</span>
+            <span className="font-mono text-lg tabular-nums leading-none text-foreground">
+              {formatDuration(seconds)}
+            </span>
+          </div>
+          <button
+            onClick={state === "recording" ? pause : resume}
+            aria-label={state === "recording" ? "Pause recording" : "Resume recording"}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground transition-transform active:scale-95"
+          >
+            {state === "recording" ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+          </button>
+          <button
+            onClick={stop}
+            aria-label="Stop and save recording"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform active:scale-95"
+          >
+            <Square className="h-5 w-5" />
+          </button>
         </div>
-        {error && <p className="text-center text-sm text-destructive">{error}</p>}
-      </div>
-    </section>
+      )}
+
+      {!active ? (
+        <button
+          onClick={start}
+          aria-label="Start recording"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl transition-transform active:scale-95"
+        >
+          <Mic className="h-6 w-6" />
+        </button>
+      ) : (
+        <button
+          onClick={stop}
+          aria-label="Stop and save recording"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-xl transition-transform active:scale-95"
+        >
+          <Square className="h-6 w-6" />
+        </button>
+      )}
+
+      {error && (
+        <p className="max-w-[calc(100vw-2rem)] rounded-xl bg-card px-3 py-2 text-center text-xs text-destructive shadow-lg ring-1 ring-border">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }
