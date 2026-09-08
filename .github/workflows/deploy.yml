@@ -31,17 +31,11 @@ jobs:
         run: bun run build
 
       - name: Prepare Pages artifact
-        run: |
-          # vite-plugin-pwa emits the service worker at dist/ root; move it into
-          # the client output so it ships with the static site.
-          cp dist/sw.js dist/workbox-*.js dist/client/ 2>/dev/null || true
-          touch dist/client/.nojekyll
-
+        run: touch dist/.nojekyll
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist/client
-
+          path: dist
   deploy:
     needs: build
     runs-on: ubuntu-latest
