@@ -24,6 +24,9 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
 
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
@@ -32,14 +35,18 @@ jobs:
 
       - name: Prepare Pages artifact
         run: |
-          mv dist/sw.js dist/client/sw.js 2>/dev/null || true
-          mv dist/workbox-*.js dist/client/ 2>/dev/null || true
-          cp dist/client/index.html dist/client/404.html
-          touch dist/client/.nojekyll
+          mkdir -p pages-artifact
+          cp -R dist/client/. pages-artifact/
+          cp dist/sw.js pages-artifact/sw.js
+          find dist -maxdepth 1 -name 'workbox-*.js' -exec cp {} pages-artifact/ \;
+          cp pages-artifact/index.html pages-artifact/404.html
+          touch pages-artifact/.nojekyll
+          test -s pages-artifact/index.html
+          test -s pages-artifact/404.html
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist/client
+          path: pages-artifact
   deploy:
     needs: build
     runs-on: ubuntu-latest
