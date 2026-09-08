@@ -12,8 +12,13 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    // Fully static export for GitHub Pages
+    pages: [{ path: "/" }],
+    prerender: { enabled: true, autoStaticPathsDiscovery: false },
   },
   vite: {
+    // GitHub Pages serves the site under /<repo-name>/
+    base: "/private-thoughts/",
     plugins: [
       VitePWA({
         registerType: "autoUpdate",
@@ -23,7 +28,7 @@ export default defineConfig({
         devOptions: { enabled: false },
         manifest: false,
         workbox: {
-          navigateFallback: "/",
+          navigateFallback: "/private-thoughts/index.html",
           navigateFallbackDenylist: [/^\/~oauth/, /^\/api\//],
           globPatterns: ["**/*.{js,css,html,ico,png,svg,webmanifest,woff2}"],
           runtimeCaching: [

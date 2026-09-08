@@ -1,4 +1,4 @@
-const SW_URL = "/sw.js";
+const SW_URL = `${import.meta.env.BASE_URL}sw.js`;
 
 function blocked() {
   if (!import.meta.env.PROD) return true;
@@ -30,7 +30,7 @@ export async function setupServiceWorker() {
     return;
   }
   try {
-    await navigator.serviceWorker.register(SW_URL, { scope: "/" });
+    await navigator.serviceWorker.register(SW_URL, { scope: import.meta.env.BASE_URL });
   } catch {
     /* offline support unavailable */
   }
