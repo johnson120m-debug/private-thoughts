@@ -33,20 +33,46 @@ jobs:
       - name: Build (static export)
         run: bun run build
 
+      - name: Debug build output (optional)
+        run: |
+          echo "Contents of dist/"
+          ls -la dist/ || true
+          echo "Contents of dist/client/ (if exists)"
+          ls -la dist/client/ 2>/dev/null || true
+
       - name: Prepare Pages artifact
         run: |
           mkdir -p pages-artifact
-          cp -R dist/client/. pages-artifact/
-          cp dist/sw.js pages-artifact/sw.js
-          find dist -maxdepth 1 -name 'workbox-*.js' -exec cp {} pages-artifact/ \;
-          cp pages-artifact/index.html pages-artifact/404.html
+          if [ -d "dist/client" ]; then
+            cp -R dist/client/. pages-artifact/
+          else
+            cp -R dist/. pages-artifact/
+          fi
+          if [ -f "dist/sw.js" ]; then
+            cp dist/sw.js pages-artifact/sw.js
+          fi
+          find dist -maxdepth 1 -name 'workbox-*.js' -exec cp {} pages-artifact/ \; 2>/dev/null || true
+          if [ -f pages-artifact/index.html ]; then
+            cp pages-artifact/index.html pages-artifact/404.html
+          else
+            echo "<h1>404 - Page Not Found</h1>" > pages-artifact/404.html
+          fi
           touch pages-artifact/.nojekyll
-          test -s pages-artifact/index.html
-          test -s pages-artifact/404.html
+          if [ ! -s pages-artifact/index.html ]; then
+            echo "❌ ERROR: index.html is missing or empty"
+            exit 1
+          fi
+          if [ ! -s pages-artifact/404.html ]; then
+            echo "❌ ERROR: 404.html is missing or empty"
+            exit 1
+          fi
+          echo "✅ Pages artifact ready"
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: pages-artifact
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
