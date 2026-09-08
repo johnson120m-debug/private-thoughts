@@ -1,4 +1,4 @@
-const SW_URL = "/sw.js";
+const SW_URL = `${import.meta.env.BASE_URL}sw.js`;
 
 function blocked() {
   if (!import.meta.env.PROD) return true;
