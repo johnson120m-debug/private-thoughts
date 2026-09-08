@@ -31,11 +31,15 @@ jobs:
         run: bun run build
 
       - name: Prepare Pages artifact
-        run: touch dist/.nojekyll
+        run: |
+          mv dist/sw.js dist/client/sw.js 2>/dev/null || true
+          mv dist/workbox-*.js dist/client/ 2>/dev/null || true
+          cp dist/client/index.html dist/client/404.html
+          touch dist/client/.nojekyll
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: dist/client
   deploy:
     needs: build
     runs-on: ubuntu-latest
