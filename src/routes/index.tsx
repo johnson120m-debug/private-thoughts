@@ -75,7 +75,7 @@ function Index() {
   if (!unlocked) return <LockScreen onUnlocked={() => setUnlocked(true)} />;
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-xl bg-background px-4 pb-16 pt-6">
+    <main className="relative mx-auto min-h-dvh w-full max-w-xl bg-background px-4 pb-28 pt-6">
       <header className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Thoughts</h1>
@@ -94,7 +94,6 @@ function Index() {
       </header>
 
       <div className="space-y-6">
-        <Recorder onSaved={refresh} />
         <div className="flex items-center justify-between rounded-2xl bg-card px-4 py-3 text-sm ring-1 ring-border">
           <label htmlFor="autolock" className="text-muted-foreground">
             Auto-lock after
@@ -118,6 +117,8 @@ function Index() {
         </div>
         <NoteList notes={notes} onChanged={refresh} />
       </div>
+
+      <Recorder onSaved={refresh} />
     </main>
   );
 }
